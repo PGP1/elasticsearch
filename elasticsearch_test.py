@@ -9,12 +9,25 @@ HOST_ADRESS = "https://search-plantly-es-cheap-my4i72dmshwihajjj2sbwqii3i.ap-sou
 
 INDEX_NAME = "c0cb03a49a754a17b07b85c4d4f19039-test"
 	
-user_request = "user-data"
-
 es = Elasticsearch(hosts=[HOST_ADRESS])
 
-# Take the user's parameters and put them into a
+
 # Python dictionary structured as an Elasticsearch query:
+"""
+{
+   "query" : {
+      "term" : { 
+        "type" : "waterLevel"
+      }
+    },
+    "sort": [
+      {
+        "time": { "order": "desc"}
+      }
+    ]
+}
+"""
+
 query_body = {
   "query": {
         "match_all": {}
