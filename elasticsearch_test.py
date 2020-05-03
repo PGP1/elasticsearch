@@ -5,10 +5,12 @@ from elasticsearch import Elasticsearch
 import json, requests
 
 
-HOST_ADRESS = "https://search-plantly-es-cheap-my4i72dmshwihajjj2sbwqii3i.ap-southeast-2.es.amazonaws.com"
+HOST_ADRESS = "https://test7:a12345678@search-plantly-es-cheap-my4i72dmshwihajjj2sbwqii3i.ap-southeast-2.es.amazonaws.com"
 
 INDEX_NAME = "c0cb03a49a754a17b07b85c4d4f19039-test"
 	
+	
+#es = Elasticsearch([HOST_ADRESS])
 es = Elasticsearch(hosts=[HOST_ADRESS])
 
 
