@@ -1,34 +1,31 @@
-#!/usr/bin/env python3
-#-*- coding: utf-8 -*-
+import boto3
+import re
+import requests
+import json
+from requests_aws4auth import AWS4Auth
 
-from elasticsearch import Elasticsearch
-import json, requests
+region = 'ap-southeast-2' # e.g. us-west-1
+service = 'es'
+credentials = boto3.Session().get_credentials()
+awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, service, session_token=credentials.token)
 
+host = 'https://search-plantly-es-cheap-my4i72dmshwihajjj2sbwqii3i.ap-southeast-2.es.amazonaws.com' # the Amazon ES domain, including https://
 
-HOST_ADRESS = "https://test7:a12345678@search-plantly-es-cheap-my4i72dmshwihajjj2sbwqii3i.ap-southeast-2.es.amazonaws.com"
+headers = { "Content-Type": "application/json" }
 
-INDEX_NAME = "c0cb03a49a754a17b07b85c4d4f19039-test"
-	
-	
-#es = Elasticsearch([HOST_ADRESS])
-es = Elasticsearch(hosts=[HOST_ADRESS])
+s3 = boto3.client('s3')
 
+# Regular expressions used to parse some simple log lines
+ip_pattern = re.compile('(\d+\.\d+\.\d+\.\d+)')
+time_pattern = re.compile('\[(\d+\/\w\w\w\/\d\d\d\d:\d\d:\d\d:\d\d\s-\d\d\d\d)\]')
+message_pattern = re.compile('\"(.+)\"')
 
-# Python dictionary structured as an Elasticsearch query:
-"""
-{
-   "query" : {
-      "term" : { 
-        "type" : "waterLevel"
-      }
-    },
-    "sort": [
-      {
-        "time": { "order": "desc"}
-      }
-    ]
-}
-"""
+type = "user_data"
+
+_id =  'c0cb03a49a754a17b07b85c4d4f19039-test'
+
+url = host + '/' + _id + '/' + type
+
 
 query_body = {
   "query": {
@@ -36,22 +33,6 @@ query_body = {
   }
 }
 
-# Pass the query dictionary to the 'body' parameter of the
-# client's Search() method, and have it return results:
-result = es.search(index=INDEX_NAME, body=query_body, size=999)
-all_hits = result['hits']['hits']
-
-# see how many "hits" it returned using the len() function
-print ("total hits using 'size' param:", len(result["hits"]["hits"]))
-
-# iterate the nested dictionaries inside the ["hits"]["hits"] list
-for num, doc in enumerate(all_hits):
-    print ("DOC ID:", doc["_id"], "--->", doc, type(doc), "\n")
-
-    # Use 'iteritems()` instead of 'items()' if using Python 2
-    for key, value in doc.items():
-        print (key, "-->", value)
-
-    # print a few spaces between each doc for readability
-    print ("\n\n")
-
+r = requests.post(url, auth=awsauth, json=query_body, headers=headers)
+        
+print(r.text)
