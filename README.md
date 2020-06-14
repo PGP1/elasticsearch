@@ -23,18 +23,29 @@ https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cogni
 
 ## 3 Testing
 
-3.1 Send some test data to the new cluster
+There are two options to run these tests:
 
-```curl -XPUT -u master-user:master-user-password domain-endpoint/movies/_doc/1 -d '{"director": "Burton, Tim", "genre": ["Comedy","Sci-Fi"], "year": 1996, "actor": ["Jack Nicholson","Pierce Brosnan","Sarah Jessica Parker"], "title": "Mars Attacks!"}' -H 'Content-Type: application/json'```
+If you choose to run them using docker then simply use
 
-3.2 Then install pre-reqs for the testing script
+```docker run --rm -it $(docker build -q .)``` with the Dockerfile in the test_suite/ directory.
 
-``pip install elasticsearch``
+This docker image will be deleted after running.
 
-and run it
+Otherwise follow the instructions below:
 
-``python3 elasticsearch_test``
+3.1 Install testing dependecies
 
-You should see any data you've added printed to the console.
+```pip3 install boto3```
+```pip3 install elasticsearch```
+```pip3 install re```
+```pip3 install json```
+```pip3 install requests```
+```pip3 install requests_aws4auth```
+
+3.2 Run the testing script to print tests results to stdout
+
+```sh run_tests.sh`
+
+If all tests are executed succesfully the index created for testing will be deleted as part of the cleanup/final test.
 
 
